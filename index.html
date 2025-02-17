@@ -30,7 +30,7 @@
         .header-cell {
             width: 50px;
             font-weight: bold;
-            background-color: #f0f0f0;
+
         }
 
         .bead {
@@ -42,8 +42,9 @@
             height: 15px;
             cursor: pointer;
             color: #fff;
-            border: 1px solid #72015f;
-            background-color: #d80303; /* natural bead color */
+            border: 1px solid #fff;
+            background-color: #333; /* natural bead color */
+            font-weight: bold;
             border-radius: 5px;
             transition: transform 0.15s ease-in-out;
             transform: translateY(0);
@@ -56,7 +57,8 @@
             margin: 2px;
         }
         .bead.active {
-            background-color: #29cf1a;
+            background-color: #fff;
+            border: 1px solid #888;
             transform: translateY(-30px);
         }
         .row-total {
@@ -66,24 +68,51 @@
             font-weight: bold;
         }
         .controls {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: #eeeC;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
+            /* color: #000; */
+            border: 1px solid #888;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .controls span {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            width: 100%;
+            margin-bottom: 5px;
         }
         .controls label {
-            margin-left: 10px;  
             margin-right: 10px;
+        }
+        .controls input {
+            width: 50px;
+            margin-left: auto;
         }
     </style>
 </head>
 <body>
     <div class="controls">
-        <label for="columnCount">Columns:</label>
-        <input type="number" id="columnCount" value="8" min="1">
-        <label for="rowCount">Rows:</label>
-        <input type="number" id="rowCount" value="3" min="1">
-        <label for="showDigits">Show Digits</label>
-        <input type="checkbox" id="showDigits">
+        <span>
+            <label for="columnCount">Columns:</label>
+            <input type="number" id="columnCount" value="8" min="1">
+        </span>
+        <span>
+            <label for="rowCount">Rows:</label>
+            <input type="number" id="rowCount" value="3" min="1">
+        </span>
+        <span>
+            <label for="showDigits">Show Digits</label>
+            <input type="checkbox" id="showDigits">
+        </span>
+        <span>
+            <label for="showHue">Show Hue</label>
+            <input type="checkbox" id="showHue">
+        </span>
     </div>
     <h1>Binary Abacus</h1>
     <div class="abacus">
@@ -93,6 +122,9 @@
     <script>
         let columns = 8;
         let rows = 3;
+        const SET_COLOR = hue => `hsl(${hue}, 70%, 50%)`;
+        const UNSET_COLOR = hue => `hsl(${hue}, 20%, 50%)`;
+
         // Function to generate the abacus dynamically based on the number of columns
         function generateAbacus(columns, rows) {
             const abacusEl = document.querySelector('.abacus');
@@ -101,9 +133,11 @@
             html += '<div class="header">';
             for (let i = columns - 1; i >= 0; i--) {
                 const value = Math.pow(2, i);
-                html += `<div class="header-cell">${value}</div>`;
+                let hue = (columns === 1) ? 0 : (i / (columns - 1)) * 360;
+                let headerColor = `hsl(${hue}, 50%, 50%)`;
+                html += `<div class="header-cell" style="color: ${headerColor};">${value}</div>`;
             }
-            // for the first column, 
+            // Total header cell remains default style.
             html += '<div class="header-cell">Total</div></div>';
 
             // Create 3 rows by default, each with the specified number of beads
@@ -111,7 +145,9 @@
                 html += '<div class="row">';
                 for (let i = columns - 1; i >= 0; i--) {
                     const value = Math.pow(2, i);
-                    html += `<div class="bead" data-value="${value}" data-bit="0">${document.getElementById('showDigits').checked ? "0" : ""}</div>`;
+                    let hue = (columns === 1) ? 0 : (i / (columns - 1)) *360;
+                    let inactiveColor = `hsl(${hue}, 20%, 50%)`;
+                    html += `<div class="bead" data-value="${value}" data-bit="0" data-hue="${hue}" style="background-color: ${inactiveColor};">${document.getElementById('showDigits').checked ? "0" : ""}</div>`;
                 }
                 html += '<div class="row-total">0</div></div>';
             }
@@ -169,21 +205,34 @@
         let swipeAction = "";
         let visitedBeads = new WeakSet();
 
+        function set(bead, hue) {
+            bead.classList.add('active');
+            bead.dataset.bit = "1";
+            bead.style.backgroundColor = SET_COLOR(hue);
+            bead.style.border = "1px solid #0000";
+        }
+
+        function unset(bead, hue) {
+            bead.classList.remove('active');
+            bead.dataset.bit = "0";
+            bead.style.backgroundColor = UNSET_COLOR(hue);
+        }
+
         // Function to apply an action to a bead (used in swipe and keyboard)
         function applySwipeAction(bead, action) {
+            // Retrieve the base hue for this bead from its data attribute.
+            let hue = parseFloat(bead.getAttribute('data-hue'));
+            if (isNaN(hue)) { hue = 0; }
+
             if (action === "set") {
-                bead.classList.add('active');
-                bead.dataset.bit = "1";
+                set(bead, hue);
             } else if (action === "unset") {
-                bead.classList.remove('active');
-                bead.dataset.bit = "0";
+                unset(bead, hue);
             } else if (action === "toggle") {
                 if (bead.classList.contains('active')) {
-                    bead.classList.remove('active');
-                    bead.dataset.bit = "0";
+                    unset(bead, hue);
                 } else {
-                    bead.classList.add('active');
-                    bead.dataset.bit = "1";
+                    set(bead, hue);
                 }
             }
             if(document.getElementById('showDigits').checked) {
