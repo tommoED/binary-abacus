@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Abacus</title>
+    <style>
+        body {
+            margin-top: 50px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: fit-content;
+            width: 100%;
+        }
+        .abacus {
+            margin-top: 20px;
+        }
+        .header, .row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .header-cell, .row-total {
+            /* border: 1px solid #333; */
+            text-align: center;
+            padding: 11px;
+            margin: 2px;
+        }
+        .header-cell {
+            width: 50px;
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+
+        .bead {
+            text-align: center;
+            padding: 10px;
+            margin: 2px;
+            width: 50px;
+            margin-top: 32px;
+            height: 15px;
+            cursor: pointer;
+            color: #fff;
+            border: 1px solid #72015f;
+            background-color: #d80303; /* natural bead color */
+            border-radius: 5px;
+            transition: transform 0.15s ease-in-out;
+            transform: translateY(0);
+        }
+        .blank-space {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            padding: 11px;
+            margin: 2px;
+        }
+        .bead.active {
+            background-color: #29cf1a;
+            transform: translateY(-30px);
+        }
+        .row-total {
+            padding-top: 25px;
+            width: 50px;
+            background-color: #ffffff;
+            font-weight: bold;
+        }
+        .controls {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        .controls label {
+            margin-left: 10px;  
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <label for="columnCount">Columns:</label>
+        <input type="number" id="columnCount" value="8" min="1">
+        <label for="rowCount">Rows:</label>
+        <input type="number" id="rowCount" value="3" min="1">
+        <label for="showDigits">Show Digits</label>
+        <input type="checkbox" id="showDigits">
+    </div>
+    <h1>Binary Abacus</h1>
+    <div class="abacus">
+        <!-- Abacus will be generated dynamically -->
+    </div>
+
+    <script>
+        let columns = 8;
+        let rows = 3;
+        // Function to generate the abacus dynamically based on the number of columns
+        function generateAbacus(columns, rows) {
+            const abacusEl = document.querySelector('.abacus');
+            let html = '';
+            // Generate the header row with binary place values (descending order)
+            html += '<div class="header">';
+            for (let i = columns - 1; i >= 0; i--) {
+                const value = Math.pow(2, i);
+                html += `<div class="header-cell">${value}</div>`;
+            }
+            // for the first column, 
+            html += '<div class="header-cell">Total</div></div>';
+
+            // Create 3 rows by default, each with the specified number of beads
+            for (let r = 0; r < rows; r++) {
+                html += '<div class="row">';
+                for (let i = columns - 1; i >= 0; i--) {
+                    const value = Math.pow(2, i);
+                    html += `<div class="bead" data-value="${value}" data-bit="0">${document.getElementById('showDigits').checked ? "0" : ""}</div>`;
+                }
+                html += '<div class="row-total">0</div></div>';
+            }
+
+            abacusEl.innerHTML = html;
+        }
+
+        // Update the decimal total for a given row by summing the values of active beads.
+        function updateRowTotal(row) {
+            let total = 0;
+            row.querySelectorAll('.bead').forEach(function(bead) {
+                if (bead.dataset.bit === "1") {
+                    total += parseInt(bead.dataset.value, 10);
+                }
+            });
+            row.querySelector('.row-total').textContent = total;
+        }
+
+        document.getElementById('columnCount').addEventListener('change', function() {
+            const newColumns = parseInt(document.getElementById('columnCount').value);
+            if (isNaN(newColumns) || newColumns < 1) {
+                alert("Please enter a valid number of columns (minimum 1).");
+                return;
+            }
+            columns = newColumns;
+            generateAbacus(columns, rows);
+        });
+
+        document.getElementById('rowCount').addEventListener('change', function() {
+            const newRows = parseInt(document.getElementById('rowCount').value);
+            if (isNaN(newRows) || newRows < 1) {
+                alert("Please enter a valid number of rows (minimum 1).");
+                return;
+            }
+            rows = newRows;
+            generateAbacus(columns, rows);
+        });
+
+        
+        // Initialize the abacus with the default 8 columns.
+        generateAbacus(columns, rows);
+
+        // Update beads' text when the Show Digits checkbox is toggled.
+        document.getElementById('showDigits').addEventListener('change', function() {
+            const show = this.checked;
+            document.querySelectorAll('.bead').forEach(function(bead) {
+                bead.textContent = show ? (bead.dataset.bit === "1" ? "1" : "0") : '';
+            });
+        });
+
+        // --- Begin Swipe and Keyboard Input Functionality ---
+
+        // Global variables for swipe input
+        let isMouseDown = false;
+        let swipeAction = "";
+        let visitedBeads = new WeakSet();
+
+        // Function to apply an action to a bead (used in swipe and keyboard)
+        function applySwipeAction(bead, action) {
+            if (action === "set") {
+                bead.classList.add('active');
+                bead.dataset.bit = "1";
+            } else if (action === "unset") {
+                bead.classList.remove('active');
+                bead.dataset.bit = "0";
+            } else if (action === "toggle") {
+                if (bead.classList.contains('active')) {
+                    bead.classList.remove('active');
+                    bead.dataset.bit = "0";
+                } else {
+                    bead.classList.add('active');
+                    bead.dataset.bit = "1";
+                }
+            }
+            if(document.getElementById('showDigits').checked) {
+                bead.textContent = bead.dataset.bit === "1" ? "1" : "0";
+            } else {
+                bead.textContent = "";
+            }
+            updateRowTotal(bead.closest('.row'));
+        }
+
+        const abacusEl = document.querySelector('.abacus');
+
+        // Prevent the context menu so right-click can be used for toggling
+        abacusEl.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+
+        // Mouse down event: start swipe action on a bead
+        abacusEl.addEventListener('mousedown', function(event) {
+            if (event.target.classList.contains('bead')) {
+                event.preventDefault();
+                isMouseDown = true;
+                visitedBeads = new WeakSet();
+                if (event.button === 0) { // Primary button
+                    swipeAction = event.target.classList.contains('active') ? "unset" : "set";
+                    applySwipeAction(event.target, swipeAction);
+                } else if (event.button === 2) { // Secondary button
+                    swipeAction = "toggle";
+                    applySwipeAction(event.target, swipeAction);
+                }
+            }
+        });
+
+        // Mouse over event: if swiping, apply the current swipeAction to new beads
+        abacusEl.addEventListener('mouseover', function(event) {
+            if (isMouseDown && event.target.classList.contains('bead')) {
+                if (!visitedBeads.has(event.target)) {
+                    visitedBeads.add(event.target);
+                    applySwipeAction(event.target, swipeAction);
+                }
+            }
+        });
+
+        // Mouse up: end the swipe action
+        window.addEventListener('mouseup', function(event) {
+            isMouseDown = false;
+            visitedBeads = new WeakSet();
+            swipeAction = "";
+        });
+
+        // Keyboard input: map key rows to beads in each row
+        const keyMap = ["qwertyui", "asdfghjk", "zxcvbnm,", "12345678"];
+
+        // New: Use Up and Down arrow keys as modifiers.
+        // When the up arrow is held, we'll set (activate) beads.
+        // When the down arrow is held, we'll unset (clear) beads.
+        let keyModifier = "";
+        window.addEventListener("keydown", function(e) {
+            if(e.key === "ArrowUp") {
+                keyModifier = "set";
+            } else if(e.key === "ArrowDown") {
+                keyModifier = "unset";
+            } else if(e.shiftKey) {
+                e.preventDefault();
+                keyModifier = "set";
+            } else if(e.key === "Tab") {
+                e.preventDefault();
+                keyModifier = "unset";
+            } else if(e.key === "Backspace") {
+                // Clear all beads when Escape is pressed
+                document.querySelectorAll('.bead').forEach(bead => {
+                    applySwipeAction(bead, "unset");
+                });
+            } else if(e.key === "#") {
+                // Toggle all beads when # is pressed
+                document.querySelectorAll('.bead').forEach(bead => {
+                    applySwipeAction(bead, "toggle");
+                });
+            } else if(e.key === "Enter") {
+                // Toggle all beads when Enter is pressed
+                document.querySelectorAll('.bead').forEach(bead => {
+                    applySwipeAction(bead, "set");
+                });
+            }
+        });
+
+        window.addEventListener("keyup", function(e) {
+            if(e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Shift" || e.key === "Tab") {
+                keyModifier = "";
+            }
+        });
+
+        window.addEventListener("keydown", function(event) {
+            let key = event.key.toLowerCase();
+            keyMap.forEach((rowKeys, rowIndex) => {
+                let pos = rowKeys.indexOf(key);
+                if (pos !== -1 && rowIndex < rows) {
+                    const rowElements = document.querySelectorAll('.abacus .row');
+                    if (rowElements[rowIndex]) {
+                        let beads = rowElements[rowIndex].querySelectorAll('.bead');
+                        if (pos < beads.length) {
+                            pos = pos + beads.length -8;
+                            let bead = beads[pos];
+                            let action = "toggle";
+                            if (keyModifier.length) {
+                                action = keyModifier;
+                            }
+                            applySwipeAction(bead, action);
+                        }
+                    }
+                }
+            });
+        }, {capture: true});
+
+        // --- End Swipe and Keyboard Input Functionality ---
+    </script>
+</body>
+</html> 

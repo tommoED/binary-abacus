@@ -1,0 +1,4 @@
+1. improve swipe mechanics -?
+2. fix state logic when pressing on the up/down keys simultaneously 
+  - when a key is held down, the beads should be set/unset based on the direction
+  - when both keys are not held down, the beads should toggle
