@@ -20,6 +20,11 @@ usability:
 - ?
 - use keyboard input rows [qwertyuui, asdfghjk, zxcvbnm] to set or toggle with shift modifier
 
+robustness:
+
+- remembers the state of the abacus on resizing
+
+
 cosmetics:
 
 - looks like actual beads which move up and down so that the user can smoothly transition to a physical abacus

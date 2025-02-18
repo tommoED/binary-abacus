@@ -30,7 +30,7 @@
         .header-cell {
             width: 50px;
             font-weight: bold;
-            background-color: #f0f0f0;
+            background-color: #fcfcfc;
         }
 
         .bead {
@@ -47,6 +47,7 @@
             border-radius: 5px;
             transition: transform 0.15s ease-in-out;
             transform: translateY(0);
+            position: relative; /* ensure any absolutely positioned children are relative thereto */
         }
         .blank-space {
             width: 50px;
@@ -92,6 +93,16 @@
             width: 50px;
             margin-left: auto;
         }
+
+        /* New styling for keyboard overlay */
+        .key-label {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 10px;
+            color: rgba(255,255,255,0.7);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -108,6 +119,9 @@
             <label for="showDigits">Show Digits</label>
             <input type="checkbox" id="showDigits">
         </span>
+        <span>
+            <button id="showKeyboard(Ctrl)">Show Keyboard</button>
+        </span>
     </div>
     <h1>Binary Abacus</h1>
     <div class="abacus">
@@ -115,8 +129,10 @@
     </div>
 
     <script>
+        let registers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];   
         let columns = 8;
-        let rows = 3;
+        let rows = 2;
+        const snapSound = new Audio('snap.mp3');
         // Function to generate the abacus dynamically based on the number of columns
         function generateAbacus(columns, rows) {
             const abacusEl = document.querySelector('.abacus');
@@ -195,6 +211,7 @@
 
         // Function to apply an action to a bead (used in swipe and keyboard)
         function applySwipeAction(bead, action) {
+            const originalBit = bead.dataset.bit;
             if (action === "set") {
                 bead.classList.add('active');
                 bead.dataset.bit = "1";
@@ -209,6 +226,10 @@
                     bead.classList.add('active');
                     bead.dataset.bit = "1";
                 }
+            }
+            if (originalBit !== bead.dataset.bit) {
+                snapSound.currentTime = 0;
+                snapSound.play();
             }
             if(document.getElementById('showDigits').checked) {
                 bead.textContent = bead.dataset.bit === "1" ? "1" : "0";
@@ -323,6 +344,44 @@
         }, {capture: true});
 
         // --- End Swipe and Keyboard Input Functionality ---
+
+        // Toggle keyboard overlay for beads when "Show Keyboard" button is clicked.
+        let keyboardOverlay = false;
+        document.getElementById('showKeyboard(Ctrl)').addEventListener('click', function() {
+            keyboardOverlay = !keyboardOverlay;
+            this.textContent = keyboardOverlay ? "Hide Keyboard" : "Show Keyboard";
+            updateKeyboardOverlay(keyboardOverlay);
+        });
+
+        function updateKeyboardOverlay(showOverlay) {
+            // Get all rows in the abacus
+            const rowElements = document.querySelectorAll('.abacus .row');
+            rowElements.forEach((rowElement, rowIndex) => {
+                // Get the beads in this row.
+                const beads = rowElement.querySelectorAll('.bead');
+                // Calculate offset (if there are more than 8 columns, mapping starts at index = beads.length - 8)
+                const offset = beads.length > 8 ? beads.length - 8 : 0;
+                beads.forEach((bead, beadIndex) => {
+                    // Remove any existing key-label to avoid duplicates.
+                    const existingLabel = bead.querySelector('.key-label');
+                    if (existingLabel) {
+                        existingLabel.remove();
+                    }
+                    // If overlay is turned on and a mapping exists for this row...
+                    if (showOverlay && rowIndex < keyMap.length) {
+                        const keyStr = keyMap[rowIndex]; // e.g. "qwertyui"
+                        const keyIndex = beadIndex - offset;
+                        if (keyIndex >= 0 && keyIndex < keyStr.length) {
+                            const letter = keyStr[keyIndex];
+                            const label = document.createElement('span');
+                            label.className = 'key-label';
+                            label.textContent = letter;
+                            bead.appendChild(label);
+                        }
+                    }
+                });
+            });
+        }
     </script>
 </body>
 </html> 
