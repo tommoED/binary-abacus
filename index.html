@@ -120,6 +120,10 @@
             <input type="checkbox" id="showDigits">
         </span>
         <span>
+            <label for="hidePlaceValues">Hide Place Values</label>
+            <input type="checkbox" id="hidePlaceValues">
+        </span>
+        <span>
             <button id="showKeyboard(Ctrl)">Show Keyboard</button>
         </span>
     </div>
@@ -141,7 +145,7 @@
             html += '<div class="header">';
             for (let i = columns - 1; i >= 0; i--) {
                 const value = Math.pow(2, i);
-                html += `<div class="header-cell">${value}</div>`;
+                html += `<div class="header-cell">${document.getElementById('hidePlaceValues').checked ? '' : value}</div>`;
             }
             // for the first column, 
             html += '<div class="header-cell">Total</div></div>';
@@ -280,7 +284,7 @@
         });
 
         // Keyboard input: map key rows to beads in each row
-        const keyMap = ["qwertyui", "asdfghjk", "zxcvbnm,", "12345678"];
+        const keyMap = ["qwertyuiop", "asdfghjkl;", "zxcvbnm,.", "1234567890"];
 
         // New: Use Up and Down arrow keys as modifiers.
         // When the up arrow is held, we'll set (activate) beads.
@@ -382,6 +386,10 @@
                 });
             });
         }
+
+        document.getElementById('hidePlaceValues').addEventListener('change', function() {
+            generateAbacus(columns, rows);
+        });
     </script>
 </body>
 </html> 
