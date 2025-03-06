@@ -22,7 +22,10 @@ usability:
 
 cosmetics:
 
-- looks like actual beads which move up and down so that the user can smoothly transition to a physical abacus
+- group into 4's to make it easier to read
+✅- looks like actual beads which move up and down so that the user can smoothly transition to a physical abacus
+
+
 
 learnability:
 
