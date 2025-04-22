@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/binary-abacus/static/css/main.848c97b6.css",
-    "main.js": "/binary-abacus/static/js/main.166b7baa.js",
+    "main.css": "/binary-abacus/static/css/main.9b25e3ea.css",
+    "main.js": "/binary-abacus/static/js/main.ec5ee16d.js",
     "index.html": "/binary-abacus/index.html",
-    "main.848c97b6.css.map": "/binary-abacus/static/css/main.848c97b6.css.map",
-    "main.166b7baa.js.map": "/binary-abacus/static/js/main.166b7baa.js.map"
+    "main.9b25e3ea.css.map": "/binary-abacus/static/css/main.9b25e3ea.css.map",
+    "main.ec5ee16d.js.map": "/binary-abacus/static/js/main.ec5ee16d.js.map"
   },
   "entrypoints": [
-    "static/css/main.848c97b6.css",
-    "static/js/main.166b7baa.js"
+    "static/css/main.9b25e3ea.css",
+    "static/js/main.ec5ee16d.js"
   ]
 }
