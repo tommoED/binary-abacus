@@ -255,8 +255,8 @@ function App() {
     // --- Render ---
     return (
         <div className="App">
-            {/* Use regular path to the logo instead of SVG import */}
-            <img src="/assets/logo.svg" alt="Binary Abacus Logo" className="logo" />
+            {/* Use PUBLIC_URL for GitHub Pages compatibility */}
+            <img src={`${process.env.PUBLIC_URL}/assets/logo.svg`} alt="Binary Abacus Logo" className="logo" />
 
             <SettingsPanel
                 isOpen={settingsOpen}

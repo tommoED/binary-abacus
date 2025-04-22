@@ -20,7 +20,7 @@ export const keyboardMatrix = [
     "zxcvbnm,./",
 ];
 
-// Reverse each row for mapping LTR keys to RTL bits
+// Keyboard map without reversing (LTR mapping)
 export const keyboardMap = keyboardMatrix.map(row => row.split(''));
 
 // Audio setup - consider preloading or handling loading state
@@ -29,7 +29,8 @@ let snapSoundInstance = null;
 export const getSnapSound = () => {
     if (!snapSoundInstance && typeof Audio !== 'undefined') {
         try {
-            snapSoundInstance = new Audio('/assets/snap.wav');
+            // Use PUBLIC_URL for GitHub Pages compatibility
+            snapSoundInstance = new Audio(`${process.env.PUBLIC_URL}/assets/snap.wav`);
             snapSoundInstance.volume = 1.0;
         } catch (error) {
             console.error("Failed to load snap sound:", error);
