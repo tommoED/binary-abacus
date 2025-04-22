@@ -1,0 +1,313 @@
+/* src/styles/Abacus.css */
+body {
+    font-family: 'Montserrat', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    /* Let React manage the flex layout via App component */
+}
+
+.App { /* Style the root component */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh; /* Ensure it takes full height */
+    position: relative; /* For absolute positioning of logo/footer */
+
+    zoom: 1.7;
+}
+
+
+.logo {
+    position: absolute;
+    right: 1vh;
+    width: 15vh;
+    filter: brightness(5) invert(1);
+    z-index: 10; /* Ensure it's above settings */
+}
+
+.abacus-table { /* Target the table element */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    border-collapse: collapse;
+    margin: auto; /* Center the table */
+    margin-top: 20vh;
+}
+
+.abacus-table td:not(.row-total), .bead:hover {
+     /* Keep the custom cursor */
+      cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='100' height='120' viewport='0 0 100 100' style='filter:saturate(0) brightness(1.4);font-size:60px;'><text y='50%'>👆</text></svg>") 16 0,auto; /*!emojicursor.app*/
+}
+
+
+.abacus-header { /* Target the thead */
+    background-color: #f8f8f8;
+    font-weight: bold;
+    border: none;
+}
+
+.abacus-header th, .abacus-header td { /* Target header cells */
+    height: 30px;
+    padding: 10px;
+    text-align: center;
+    color: #333;
+    border: none;
+    position: relative; /* Needed for potential multi-row headers */
+}
+
+/* Style for IEEE 754 specific headers */
+.abacus-header .ieee-row th, .abacus-header .ieee-row td {
+    font-size: 0.9em;
+    padding: 5px;
+}
+.abacus-header .ieee-sign { color: hsl(0, 70%, 50%); }
+.abacus-header .ieee-exponent { color: hsl(120, 70%, 50%); }
+.abacus-header .ieee-mantissa { color: hsl(240, 70%, 50%); }
+
+
+/* Row striping */
+.abacus-table tr:nth-child(odd) td:not(.row-total) {
+   background-color: #f0f0f0; /* Apply to bead cells only */
+}
+.abacus-table tr:nth-child(even) td:not(.row-total) {
+    background-color: #ffffff; /* Or whatever the base color is */
+}
+
+
+/* Cell containing the bead */
+.abacus-table td {
+    padding: 7px;
+    text-align: center;
+    width: 40px; /* Base width */
+    height: 40px; /* Base height */
+    position: relative;
+    font-weight: 500;
+    vertical-align: center; /* Align beads to bottom */
+}
+
+td.row-total {
+    width: 100px;
+    font-weight: 600;
+    font-size: 30px;
+    color: #333;
+}
+
+
+.abacus-table td:not(.row-total) {
+    border-bottom: 10px solid #ccc;
+}
+
+.settings-panel {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 220px; /* Slightly wider */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 9999;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.settings-panel.open {
+    transform: translateX(0);
+}
+
+.settings-toggle {
+    position: absolute;
+    right: -37px; /* Adjust position */
+    top: 10px; /* Align better */
+    /* transform: translateY(-50%); Remove this */
+    padding: 10px 5px;
+    cursor: pointer;
+    z-index: 10000;
+    background-color: #f5f5f5; /* Match panel */
+    border: 1px solid #ddd;
+    border-left: none;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    font-size: 1.2em; /* Make gear bigger */
+    line-height: 1; /* Ensure tight fit */
+}
+
+.settings-panel:not(.open):hover {
+    transform: translateX(-88%); /* Adjust hover reveal */
+}
+
+
+.control-group {
+    margin-bottom: 15px; /* More spacing */
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping */
+}
+
+.control-group label {
+    flex-basis: 100%; /* Label on its own line */
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.control-group input[type="number"],
+.control-group select {
+    width: 100%; /* Full width within group */
+    padding: 8px;
+    /* margin-left: 10px; Remove */
+    box-sizing: border-box; /* Include padding in width */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.control-group input[type="checkbox"] {
+    margin-left: 10px;
+    width: auto; /* Don't force width */
+    transform: scale(1.2); /* Make checkbox bigger */
+}
+/* Specific layout for checkboxes */
+.control-group.checkbox-group {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.control-group.checkbox-group label {
+    flex-basis: auto; /* Reset basis */
+    margin-bottom: 0;
+}
+
+
+.bead {
+    text-align: center;
+    padding: 10px; /* Remove padding, use height/width */
+    width: 50px;  /* Make bead slightly smaller than cell */
+    height: 15px;
+    line-height: 15px; /* Vertically center text if needed */
+    margin-top: 32px;
+    cursor: pointer;
+    color: #fff;
+    border-radius: 5px;
+    transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    transform: translateY(0);
+    position: relative;
+    z-index: 1;
+     /* HSL color based on CSS variable from props */
+    background-color: hsl(calc(360 * (var(--col-index, 0) / var(--total-columns, 8))), 30%, 50%);
+}
+
+.bead:hover {
+    transform: translateY(-10%);
+}
+
+.bead.active {
+    transform: translateY(-100%); /* Move active bead up */
+     /* Active beads get a lighter/brighter version */
+    background-color: hsl(calc(360 * (var(--col-index, 0) / var(--total-columns, 8))), 70%, 50%);
+}
+
+.bead.active:hover {
+    transform: translateY(-90%); /* Adjust hover for active bead */
+}
+
+/* Color the corresponding header cell based on column index */
+.abacus-header th:nth-child(n),
+.abacus-header tr td:nth-child(n) {
+    /* Use a variable set on the th/td itself */
+     color: hsl(calc(360 * (var(--col-index, 0) / var(--total-columns, 8))), 70%, 50%);
+}
+
+
+.bead-value {
+    display: var(--show-digits, none); /* Controlled by CSS variable */
+    pointer-events: none;
+    font-size: 20px;
+    font-weight: bold;
+    position: absolute; /* Position within bead */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.bead.active .bead-value {
+     color: rgba(255, 255, 255, 0.9); /* Lighter text on active bead */
+}
+
+
+.keyboard-key {
+    position: absolute;
+    bottom: 46px; /* Position below the bead cell line */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: #555;
+    background-color: #ddd;
+    z-index: 0; /* Below bead */
+    box-shadow: 0 5px 0 5px #ccc;
+    border-radius: 3px;
+    padding: 1px 3px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+    display: flex; /* Use flex for centering */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    pointer-events: none; /* Don't interfere with clicks */
+    display: var(--show-keys, none); /* Controlled by CSS var */
+}
+
+/* Hide if empty - might not be needed if React doesn't render empty ones */
+.keyboard-key:empty {
+    display: none;
+}
+
+
+/* Footer styling */
+.footer {
+    margin-top: auto; /* Push to bottom */
+    padding: 10px 0;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5vh; /* Smaller text */
+    color: #555; /* Dimmer color */
+    opacity: 0.7;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.footer a {
+    color: #333;
+    text-decoration: none;
+}
+.footer a:hover {
+    text-decoration: underline;
+}
+
+.footer:hover {
+    opacity: 1;
+}
+
+/* Add button styling if you add buttons */
+button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
