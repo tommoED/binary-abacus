@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import SettingsPanel from './components/SettingsPanel';
 import AbacusGrid from './components/AbacusGrid';
 import Footer from './components/Footer';
-import { MAX_ROWS, MAX_COLS, keyboardMap, playSnapSound } from './constants';
+import { MAX_ROWS, MAX_COLS, keyboardMap, snapSoundInstance } from './constants';
 import './styles/Abacus.css'; // Import styles
 
 function App() {
@@ -14,6 +14,7 @@ function App() {
     const [encoding, setEncoding] = useState(0); // 0 = Unsigned
     const [showDigits, setShowDigits] = useState(true);
     const [showKeys, setShowKeys] = useState(true); // Default to showing keys
+    const [soundOn, setSoundOn] = useState(true);
     const [settingsOpen, setSettingsOpen] = useState(false);
 
     // Interaction State
@@ -50,14 +51,16 @@ function App() {
             }
 
             if (changed) {
-                playSnapSound();
+                if (soundOn) {
+                    playSnapSound();
+                }
                 const nextRegisters = [...prevRegisters];
                 nextRegisters[rowIndex] = newVal;
                 return nextRegisters;
             }
             return prevRegisters; // No change, return original array
         });
-    }, []); // No dependencies needed as setRegisters handles updates correctly
+    }, [soundOn]); // Add soundOn as a dependency
 
     // --- Event Handlers ---
     const handleRowsChange = (e) => {
@@ -97,9 +100,11 @@ function App() {
          }
     };
 
-    const handleShowDigitsChange = (e) => setShowDigits(e.target.checked);
-    const handleShowKeysChange = (e) => setShowKeys(e.target.checked);
+    const handleSoundChange = () => setSoundOn(prev => !prev);
+    const handleShowDigitsChange = () => setShowDigits(prev => !prev);
+    const handleShowKeysChange = () => setShowKeys(prev => !prev);
     const toggleSettings = () => setSettingsOpen(prev => !prev);
+    const exitSettings = () => setSettingsOpen(false);
 
     // Bead Interaction Handlers
     const handleBeadMouseDown = useCallback((event, rowIndex, colIndex) => {
@@ -132,6 +137,15 @@ function App() {
          event.preventDefault(); // Prevent browser context menu
     }, []);
 
+    const playSnapSound = () => {
+        snapSoundInstance.currentTime = 0;
+        if (soundOn) {
+            snapSoundInstance.play().catch(e => console.warn("Audio play failed:", e));
+        }
+    };
+    
+    
+    
 
     // --- Keyboard Handling Effect ---
     useEffect(() => {
@@ -271,6 +285,9 @@ function App() {
                 handleShowDigitsChange={handleShowDigitsChange}
                 showKeys={showKeys}
                 handleShowKeysChange={handleShowKeysChange}
+                soundOn={soundOn}
+                handleSoundChange={handleSoundChange}
+                exitSettings={exitSettings}
             />
 
             <main> {/* Wrap main content */}

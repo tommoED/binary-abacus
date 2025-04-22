@@ -14,10 +14,36 @@ const SettingsPanel = ({
     handleShowDigitsChange,
     showKeys,
     handleShowKeysChange,
+    soundOn,
+    handleSoundChange,
+    exitSettings,
 }) => {
     return (
-        <div className={`settings-panel ${isOpen ? 'open' : ''}`}>
-            <div className="settings-toggle" onClick={toggleSettings}>⚙️</div>
+        <div className={`settings-panel ${isOpen ? 'open' : ''}`} onBlur={exitSettings}>
+            <div className="toggle-buttons">
+                <button className={`toggle-button ${soundOn ? 'active' : 'disabled'}`}
+                    onClick={handleSoundChange}
+                    title="Sound"
+                >
+                    {soundOn ? '🔊' : '🔈'}
+                </button>
+                <button 
+                    className={`toggle-button ${showDigits ? 'active' : 'disabled'}`}
+                    onClick={handleShowDigitsChange}
+                    title="Show Digits (0/1)"
+                >
+                    {showDigits ? '🔢' : <span>🔢<span>❌</span></span>}
+                </button>
+                <button 
+                    className={`toggle-button ${showKeys ? 'active' : 'disabled'}`}
+                    onClick={handleShowKeysChange}
+                    title="Show Key Hints"
+                >
+                    {showKeys ? '⌨️' : <span>⌨️<span>❌</span></span>}
+                </button>
+                 <button className="toggle-button" onClick={toggleSettings}>🎛️</button>
+            </div>
+            
             <h2>Settings</h2>
             <div className="control-group">
                 <label htmlFor="rows">Number of Rows (Max: {MAX_ROWS}):</label>
@@ -48,24 +74,6 @@ const SettingsPanel = ({
                         <option key={enc.value} value={enc.value}>{enc.label}</option>
                     ))}
                 </select>
-            </div>
-            <div className="control-group checkbox-group">
-                <label htmlFor="showDigits">Show Digits (0/1):</label>
-                <input
-                    type="checkbox"
-                    id="showDigits"
-                    checked={showDigits}
-                    onChange={handleShowDigitsChange}
-                />
-            </div>
-            <div className="control-group checkbox-group">
-                <label htmlFor="showKeys">Show Key Hints:</label>
-                <input
-                    type="checkbox"
-                    id="showKeys"
-                    checked={showKeys}
-                    onChange={handleShowKeysChange}
-                 />
             </div>
         </div>
     );

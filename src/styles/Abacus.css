@@ -136,6 +136,31 @@ td.row-total {
     line-height: 1; /* Ensure tight fit */
 }
 
+.toggle-buttons {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: -37px;
+    top: 10px;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    background:none;
+}
+
+.toggle-buttons button {
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-size: 20px;
+}
+
+.toggle-buttons span span {
+    position: absolute;
+    right: 4px;
+}
+
+
 .settings-panel:not(.open):hover {
     transform: translateX(-88%); /* Adjust hover reveal */
 }
@@ -286,25 +311,7 @@ td.row-total {
     opacity: 1;
 }
 
-/* Add button styling if you add buttons */
-button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 10px 15px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-    margin: 10px 0;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
 
-button:hover {
-    background-color: #45a049;
-}
 button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
