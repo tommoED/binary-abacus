@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/binary-abacus/static/css/main.3d136510.css",
+    "main.js": "/binary-abacus/static/js/main.04b8221b.js",
+    "index.html": "/binary-abacus/index.html",
+    "main.3d136510.css.map": "/binary-abacus/static/css/main.3d136510.css.map",
+    "main.04b8221b.js.map": "/binary-abacus/static/js/main.04b8221b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3d136510.css",
+    "static/js/main.04b8221b.js"
+  ]
+}
