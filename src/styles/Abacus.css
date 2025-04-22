@@ -247,14 +247,12 @@ td.row-total {
     z-index: 0; /* Below bead */
     box-shadow: 0 5px 0 5px #ccc;
     border-radius: 3px;
-    padding: 1px 3px;
-    width: 20px;
-    height: 20px;
+    padding: 5px 5px;
+    width: 15px;
+    height: 15px;
     opacity: 0.6;
     display: flex; /* Use flex for centering */
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+    
     pointer-events: none; /* Don't interfere with clicks */
     display: var(--show-keys, none); /* Controlled by CSS var */
 }
