@@ -19,7 +19,7 @@ const SettingsPanel = ({
     exitSettings,
 }) => {
     return (
-        <div className={`settings-panel ${isOpen ? 'open' : ''}`} onBlur={exitSettings}>
+        <div className={`settings-panel ${isOpen ? 'open' : ''}`} onMouseLeave={exitSettings}>
             <div className="toggle-buttons">
                 <button className={`toggle-button ${soundOn ? 'active' : 'disabled'}`}
                     onClick={handleSoundChange}

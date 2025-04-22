@@ -150,6 +150,11 @@ function App() {
     // --- Keyboard Handling Effect ---
     useEffect(() => {
         const handleKeyDown = (e) => {
+            // Skip keyboard handling when settings panel is open or user is typing in an input
+            if (settingsOpen || ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) {
+                return;
+            }
+
             // --- Modifier Keys ---
             if (e.key === 'Shift') {
                 e.preventDefault(); // Prevent potential text selection issues
@@ -157,21 +162,20 @@ function App() {
                 return; // Don't process further
             }
             if (e.key === 'ArrowUp') {
-                 e.preventDefault(); // Prevent page scrolling
+                e.preventDefault(); // Prevent page scrolling
                 setKeyModifier('set');
                 return;
             }
-             if (e.key === 'Control' || e.key === 'Tab') { // Use Ctrl or Tab for unset
-                 e.preventDefault(); // Prevent tabbing away
-                setKeyModifier('unset');
-                return;
-             }
-            if (e.key === 'ArrowDown') {
-                 e.preventDefault(); // Prevent page scrolling
+            if (e.key === 'Control' || e.key === 'Tab') { // Use Ctrl or Tab for unset
+                e.preventDefault(); // Prevent tabbing away
                 setKeyModifier('unset');
                 return;
             }
-
+            if (e.key === 'ArrowDown') {
+                e.preventDefault(); // Prevent page scrolling
+                setKeyModifier('unset');
+                return;
+            }
 
             // --- Global Action Keys ---
              if (e.key === 'Backspace') {
@@ -248,9 +252,14 @@ function App() {
         };
 
         const handleKeyUp = (e) => {
-             if (['Shift', 'ArrowUp', 'Control', 'Tab', 'ArrowDown'].includes(e.key)) {
-                 setKeyModifier('toggle');
-             }
+            // Skip key modifiers when settings panel is open
+            if (settingsOpen || ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) {
+                return;
+            }
+            
+            if (['Shift', 'ArrowUp', 'Control', 'Tab', 'ArrowDown'].includes(e.key)) {
+                setKeyModifier('toggle');
+            }
         };
 
         // Add global listeners
@@ -264,7 +273,7 @@ function App() {
             window.removeEventListener('keyup', handleKeyUp);
             window.removeEventListener('mouseup', handleMouseUpGlobal);
         };
-    }, [nRows, nCols, keyModifier, updateRegister, encoding]); // Re-run if dimensions, modifier, or update logic change
+    }, [nRows, nCols, keyModifier, updateRegister, encoding, settingsOpen]); // Added settingsOpen to dependencies
 
     // --- Render ---
     return (
